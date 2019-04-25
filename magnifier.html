@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Magnifier</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .box,
+        .big {
+            float: left;
+            width: 400px;
+            height: 400px;
+            position: relative;
+            margin: 20px 20px;
+            border: 1px solid darkcyan;
+            overflow: hidden;
+        }
+
+        .box img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .big {
+            border: none;
+            display: none;
+        }
+
+        .big img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 800px;
+            height: 800px;
+        }
+
+        .mask {
+            width: 200px;
+            height: 200px;
+            background-color: rgba(0, 0, 0, .2);
+            position: absolute;
+            top: 0;
+            left: 0;
+            cursor: move;
+            display: none;
+        }
+    </style>
+</head>
+<div class="box" id="box">
+    <img src="./img/1.jpeg" alt="">
+    <div class="mask" id="mask"></div>
+</div>
+<div class="big" id="big">
+    <img src="./img/1.jpeg" alt="" id='img'>
+</div>
+
+<body>
+
+</body>
+<script>
+    let _dom = (selector) => document.getElementById(selector)
+    let box = _dom('box');
+    let mask = _dom('mask');
+    let big = _dom('big');
+    let img = _dom('img');
+    box.onmouseenter = function () {
+        big.style.display = mask.style.display = 'block';
+    }
+    box.onmousemove = function ({
+        pageX,
+        pageY,
+    }) {
+        // 边界最小值
+        let minLeft = 0
+        let minTop = 0
+
+        // 边界最大值
+        let maxLeft = this.offsetWidth - mask.offsetWidth;
+        let maxTop = this.offsetHeight - mask.offsetHeight;
+
+        // 计算出鼠标在元素内 坐标x、y
+        // 减去mask自身宽度和高度的一半 目的让鼠标坐标 作为mask的中心点
+        let left = pageX - this.offsetLeft - mask.clientWidth / 2;
+        let top = pageY - this.offsetTop - mask.clientHeight / 2;
+
+        // 边界最小值处理
+        left < minLeft && (left = 0)
+        top < minTop && (top = 0)
+
+        // 边界最大值处理
+        left > maxLeft && (left = maxLeft)
+        top > maxTop && (top = maxTop);
+
+        // 
+        mask.style.left = left + 'px'
+        mask.style.top = top + 'px'
+
+        // 控制大图片 相反方向移动
+        img.style.left = -left * 2 + "px";
+        img.style.top = -top * 2 + 'px';
+    }
+
+    box.onmouseleave = function () {
+        big.style.display = mask.style.display = 'none';
+    }
+</script>
+
+</html>
